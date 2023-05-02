@@ -1,0 +1,71 @@
+@charset "UTF-8";
+
+body {
+    font-family: 'PixelMplus12';
+    color: #ffffff;
+    background-color: black;
+}
+
+.title{
+    text-align: center;
+    
+}
+
+div.container {
+    width: 960px;
+    margin: 0 auto;
+}
+
+div.enemy {
+    width: 960px;
+    margin: 0 auto;
+}
+
+
+.enemy {
+    text-align: center;
+}
+
+.enemy img {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 10px;
+}
+
+
+
+div.battle_container{
+    width: 960px;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+
+
+div.battle_command {
+    width: 30%;
+    margin: 10px;
+    padding: 20px;
+    border: #ffffff solid 5px;
+    border-radius: 20px ;
+}
+
+div.battle_command ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+;}
+
+div.battle_message {
+    width: 70%;
+    margin: 10px;
+    padding: 20px;
+    border: #ffffff solid 5px;
+    border-radius: 20px;
+}
+
+p.copyright{
+    text-align: center;
+}

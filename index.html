@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <script src="https://code.jquery.com/jquery-3.6.4.js"
+        integrity="sha256-a9jBBRygX1Bh5lt8GZjXDzyOB+bWve9EiO7tROUtj/E=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="./assets/css/import.css">
+    <title>タイマン！ヤンキーバトル</title>
+</head>
+
+<body>
+    <!-- 音楽を再生 -->
+    <audio loop autoplay controls src="./assets/sounds/battle.mp3"></audio>
+
+
+    <div class="container">
+        <header>
+            <h1 class="title">タイマン！ヤンキーバトル</h1>
+        </header>
+        <main>
+            <div class="enemy">
+                <div><span id="enemy_dialogue">おまえ、どこちゅうだぁ？</span></div> <!--敵のセリフを表示 -->
+                <img src="./assets/img/yankee.png" alt="" width="200px" class="yankee">
+                <p><span id="enemy_hp">ヤンキーはやるきマンマンだ！</span></p>
+
+            </div><!-- /.enemy -->
+            <div class="battle_container">
+                <div class="battle_command">
+                    <ul>
+                        <li id="bareHands_btn">なぐる</li>
+                        <li id="menchi_btn">めんちをきる</li>
+                        <li id="swearing_btn">わるぐちをいう</li>
+                        <li id="money_btn">かねをわたす</li>
+                        <li id="cocacola_btn">コカ・コーラをのむ</li>
+                        <li id="runaway_btn">にげる</li>
+                    </ul>
+                </div><!-- /.battle_command -->
+                <div class="battle_message">
+                    <div><span id="player_action"></span></div> <!--プレイヤーの行動を表示 -->
+                    <div><span id="enemy_damage"></span></div> <!--敵の受けたダメージを表示 -->
+                </div><!-- /.battle_message -->
+            </div><!-- /.battle_container -->
+        </main>
+        <footer>
+            <p class="copyright">(C) Gawasan</p>
+        </footer>
+    </div><!-- /.container-->
+    <script>
+
+        //自分のHP用変数を設定。初期値は100
+        let playerHp = 100;
+
+        //自分の財布の中のお金用変数を設定。初期値は500
+        let playerWallet = 5000;
+
+        //敵の財布の中のお金用変数を設定。初期値は500
+        let enemyWallet = 0;
+
+        //敵のHP用変数を設定。初期値は100
+        let enemyHp = 200;
+
+        //勝った回数をカウントする変数を設定。初期値は０
+        let winCount = 0;
+        //引き分け回数をカウントする変数を設定。初期値は０
+        let drawCount = 0;
+        //負けた回数をカウントする変数を設定。初期値は０
+        let loseCount = 0;
+
+        //当り判定用の乱数生成の関数
+        function hitBoxNum() {
+            // 生成したい乱数をminからmaxで指定
+            const min = 1;
+            const max = 6;
+            // Math.randomで0以上1未満の乱数を生成し、Math.floorで小数点を切り落とす。切り落とすので+1を指定
+            const hitBoxNum = Math.floor(Math.random() * (max - min + 1)) + min;
+            // 戻り値として乱数を返す
+            return hitBoxNum;
+        }
+
+        //ダメージ数用の乱数生成の関数
+        function hitDamageNum() {
+            // 生成したい乱数をminからmaxで指定
+            const min = 1;
+            const max = 3;
+            // Math.randomで0以上1未満の乱数を生成し、Math.floorで小数点を切り落とす。切り落とすので+1を指定
+            const hitDamageNum = Math.floor(Math.random() * (max - min + 1)) + min;
+            // 戻り値として乱数を返す
+            return hitDamageNum;
+        }
+
+        //お金生成用の乱数生成の関数
+        function moneyNum() {
+            // 生成したい乱数をminからmaxで指定
+            const min = 1;
+            const max = 500;
+            // Math.randomで0以上1未満の乱数を生成し、Math.floorで小数点を切り落とす。切り落とすので+1を指定
+            const moneyNum = Math.floor(Math.random() * (max - min + 1)) + min;
+            // 戻り値として乱数を返す
+            return moneyNum;
+        }
+
+
+        // 素手でなぐったときの処理
+        $("#bareHands_btn").on("click", function () {
+
+            // プレイヤーの攻撃がヒットかミスをきめるための乱数
+            const hitBoxType = hitBoxNum();
+
+            // プレイヤーが敵に与えるダメージ
+            const hitDamage = hitDamageNum();
+
+            // プレイヤーが敵から受けるダメージ
+            const receiveDamage = hitDamageNum();
+
+            //  プレイヤーが敵に与えるダメージを代入するための変数
+            let enemyDamage = "";
+
+            // 乱数の値別でプレイヤーの攻撃のヒットを判定
+            if (1 <= hitBoxType && hitBoxType <= 5) {
+
+                // プレイヤーの攻撃がヒットした場合の処理
+                if (hitBoxType == 1) {
+                    enemyDamage = hitDamage;
+                    $("#player_action").html("ガワさんはなぐりかかった");
+                    $("#enemy_damage").html("ヤンキーに" + enemyDamage + "ダメージをあたえた");
+                    $("#enemy_dialogue").html("おまえ、なめてんじゃねーぞ！");
+                    $(".yankee").fadeOut(50).fadeIn(50).fadeOut(50).fadeIn(50);
+                }
+                else if (hitBoxType == 2) {
+                    enemyDamage = hitDamage * 2;
+                    $("#player_action").html("ガワさんはちからをこめてなぐった");
+                    $("#enemy_damage").html("ヤンキーに" + enemyDamage + "ダメージをあたえた");
+                    $("#enemy_dialogue").html("きあいがたんねーぞ！コラァ！");
+                    $(".yankee").fadeOut(50).fadeIn(50).fadeOut(50).fadeIn(50);
+                }
+                else if (hitBoxType == 3) {
+                    enemyDamage = hitDamage * 3;
+                    $("#player_action").html("ガワさんはするどいじゃぶをくりだした");
+                    $("#enemy_damage").html("ヤンキーに" + enemyDamage + "ダメージをあたえた");
+                    $("#enemy_dialogue").html("おっ、きもちがいーパンチ、くれんじゃねーかよ");
+                    $(".yankee").fadeOut(50).fadeIn(50).fadeOut(50).fadeIn(50);
+                }
+                else if (hitBoxType == 4) {
+                    enemyDamage = hitDamage * 4;
+                    $("#player_action").html("ガワさんはあざやかなふっくをくりだした");
+                    $("#enemy_damage").html("ヤンキーに" + enemyDamage + "ダメージをあたえた");
+                    $("#enemy_dialogue").html("おー！じょうとうじゃねえかよ！");
+                    $(".yankee").fadeOut(50).fadeIn(50).fadeOut(50).fadeIn(50);
+                }
+                else if (hitBoxType == 5) {
+                    enemyDamage = 60;
+                    $("#player_action").html("ガワさんはめにもみえないスピードでなぐりかかった");
+                    $("#enemy_damage").html("ヤンキーにのきゅうしょにヒット！" + enemyDamage + "ダメージをあたえた");
+                    $("#enemy_dialogue").html("おっ、おまえ、まさか、あのでんせつの…");
+                    $(".yankee").fadeOut(100).fadeIn(50).fadeOut(50).fadeIn(50);
+                }
+                else {
+                    $("#player_action").html("ガワさんはぱんちをくりだした");
+                    $("#enemy_damage").html("ヤンキーはかれいにぱんちをさばいた");
+                    $("#enemy_dialogue").html("どこ、ねらってんだ？ あ〜ん？");
+                }
+
+            }
+            else {
+                $("#player_action").html("ガワさんのぱんちはくうをきった");
+                $("#enemy_damage").html("ヤンキーはよゆうをこいている");
+                $("#enemy_dialogue").html("どこ、ねらってんだ？ あ〜ん？");
+            }
+
+
+            // 敵のHPを減らす
+            if (enemyDamage >= 1) {
+                enemyHp = enemyHp - enemyDamage;
+            }
+
+            // 敵のHPを表示
+            $("#enemy_hp").html("ヤンキーはやるきマンマンだ");
+
+
+            // 敵のHPが減少するとステータス変更
+            if (enemyHp >= 150 && enemyHp <= 199) {
+                $("#enemy_hp").html("ヤンキーはめんちをきっている");
+            }
+            else if (enemyHp >= 100 && enemyHp <= 149) {
+                $("#enemy_hp").html("ヤンキーはがんをとばしている");
+            }
+            else if (enemyHp >= 50 && enemyHp <= 99) {
+                $("#enemy_hp").html("ヤンキーはすこしいたそうだ");
+            }
+            else if (enemyHp >= 1 && enemyHp <= 49) {
+                $("#enemy_hp").html("ヤンキーはよろついている");
+            }
+            else if (enemyHp <= 0) {
+                $("#enemy_dialogue").html("かんべんしてください。。").fadeTo(2000, 0);;
+                $("#player_action").html("ヤンキーをたおした！<br>おれ、いけんじゃね？というなぞのじしんをてにいれた。");
+                $(".yankee").fadeTo(3000, 0);
+                $("#enemy_damage").html("");
+                $("#enemy_hp").html("");
+
+            }
+
+        });
+
+
+        // 　カネを渡した時の処理
+        $("#money_btn").on("click", function () {
+
+            // プレイヤーが敵に渡すお金
+            const money = moneyNum();
+
+
+            //  プレイヤーが敵に渡すお金を代入するための変数
+            let enemyMoney = "";
+
+            if (money <= 100) {
+                enemyMoney = money;
+                $("#player_action").html("ガワさんは、さいふのなかにある、おかねをわたした");
+                $("#enemy_dialogue").html(enemyMoney + "円？じゅーすもかえねーぞ！");
+            }
+            else if (money >= 101 && money <= 400) {
+                enemyMoney = money;
+                $("#player_action").html("ガワさんは、さいふのなかにある、おかねをわたした");
+                $("#enemy_dialogue").html(enemyMoney + "円？ ふざけてんなよ？");
+            }
+            else if (money >= 401 && money <= 500) {
+                enemyMoney = money;
+                $("#player_action").html("ガワさんは、さいふのなかにある、おかねをわたした");
+                $("#enemy_dialogue").html("おっ、" + enemyMoney + "円あんじゃん？ でもまだ、もってんだろーが！");
+
+            }
+
+            // 敵の財布にお金をいれる
+            if (enemyMoney <= 1000) {
+                enemyWallet = enemyWallet + enemyMoney;
+            }
+
+            // 敵の財布の中身が1000円になれば
+            if (enemyWallet >= 2000) {
+                $("#enemy_dialogue").html("きょうはこのへんでみのがしてやんよ").fadeTo(2000, 0);;
+                $("#player_action").html("ヤンキーからのがれることができたが、なさけねーなというきもちでいっぱいだ");
+                $(".yankee").fadeTo(3000, 0);
+                $("#enemy_damage").html("");
+                $("#enemy_hp").html("");
+            }
+
+        });
+
+        // 　逃げた時の処理
+
+        $("#runaway_btn").on("click", function () {
+
+            $("#player_action").html("ガワさんはそのばから、にげだした！<br> しかし、まわりこまれてにげられない！>");
+            $("#enemy_damage").html("");
+            $("#enemy_dialogue").html("このままじゃ、にげらんねーぞ！");
+
+        });
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>

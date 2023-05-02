@@ -1,0 +1,8 @@
+@charset "UTF-8";
+
+@font-face {
+    font-family: 'PixelMplus12';
+    /* フォント名 */
+    /* フォーマットごとにパスを指定 */
+    src: url('/assets/font/PixelMplus12-Regular.ttf') format('truetype');
+}
